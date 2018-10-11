@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name 查看历史价格
 // @namespace win.somereason.web.utils
-// @version 2018.10.10
+// @version 2018.10.11
 // @description 购物网站商品页的商品名称后显示[历史价格按钮],点击后打开"慢慢买"网站,查看历史价格.目前支持京东,淘宝,天猫,亚马逊,当当,苏宁,网易严选
 // @author somereason
 // @license MIT
