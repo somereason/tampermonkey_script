@@ -14,7 +14,7 @@
 
 
 (function () {
-    document.getElementById("logo").innerHTML = '<img src="https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo_top_86d58ae1.png" alt="Baidu" data-atf="3">';
+    document.getElementById("logocont").innerHTML='<a href="https://www.baidu.com" data-hveid="7"><img src="https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo_top_86d58ae1.png" alt="Baidu" data-atf="3"></a>';  
     document.title = document.title.replace(/Google\s/g, "百度");
 
     var searchBtnsByName = document.getElementsByName("btnG")
