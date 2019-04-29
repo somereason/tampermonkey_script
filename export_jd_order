@@ -1,0 +1,53 @@
+// ==UserScript==
+// @name 导出京东订单
+// @namespace win.somereason.web.utils
+// @version 2018.04.29.2
+// @description 这个脚本帮助你导出京东的订单列表页中的订单,仅限本页.
+// @author somereason
+// @date 2019-04-29
+// @match *://order.jd.com/center/list.action*
+// @grant none
+// ==/UserScript==
+
+(function () {
+
+    $($(".mt h3")[0]).html($($(".mt h3")[0]).html() + "&nbsp<button id='srBtnExport'>导出订单</button>")
+    $("#srBtnExport").click(function (e) {
+        var str = getOrderListStr();
+        createAndDownloadFile("京东订单导出.csv", str);
+    })
+
+    function getOrderListStr() {
+        var str = "";
+        $(".tr-th").each(function () {
+            var ele = {
+                time: $(this).find(".dealtime").text(),
+                billId: $(this).find(".number").text().trim().replace(/\s+/, ""),
+                amount: $(this).next().find(".amount span:first-child").text().replace("总额", "").trim(),
+                status: $(this).next().find(".order-status").text().trim(),
+            };
+            var arr = $(this).nextAll();
+            var str1 = "";
+            for (var i = 0; i < arr.length; i++) {
+                str1 += $(arr[i]).find(".p-name").text().trim();
+                str1 += "(" + $(arr[i]).find(".goods-number").text().trim() + ")";
+                str1 += ","
+            }
+            ele.title = str1;
+            str += `"${ele.billId}","${ele.time}","${ele.status}","${ele.amount}","${ele.title}"`;
+            str += "\n";
+        })
+      
+        return str;
+    }
+
+    function createAndDownloadFile(fileName, content) {
+        var aTag = document.createElement('a');
+        var blob = new Blob([content]);
+        aTag.download = fileName;
+        aTag.href = URL.createObjectURL(blob);
+        aTag.click();
+        URL.revokeObjectURL(blob);
+    }
+
+})();
