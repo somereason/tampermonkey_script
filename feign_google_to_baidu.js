@@ -1,17 +1,15 @@
 // ==UserScript==
-// @name 把google搜索伪装成百度搜索
+// @name 把Google搜索伪装成百度搜索
 // @namespace win.somereason.web.utils
-// @version 2019.04.29.3
+// @version 2020.1.7.1
 // @description 用Google搜索,很多人看到屏幕后会问你怎么上Google的.所以当我们把Google的logo换成百度,他们就不会问那么多问题了!
 // @author somereason
 // @license MIT
 // @date 2018-10-05
-// @match *://www.google.com/search*
-// @match *://www.google.com.hk/search*
-// @match *://www.google.com.tw/search*
-// @match *://www.google.com/
-// @match *://www.google.com.hk/
-// @match *://www.google.com.tw/
+// @include *://www.google.com/search*
+// @include *://www.google.com.*/search*
+// @include *://www.google.com/
+// @include *://www.google.com.*/
 // @grant none
 // ==/UserScript==
 //
@@ -45,36 +43,51 @@
           console.log("oops,google又改样式了.请静待更新");
       } else {
           var imgSize = getImgSize(logo);
-          logo.innerHTML = '<a href="https://www.baidu.com" data-hveid="7"><img src="https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo_top_86d58ae1.png" alt="Baidu" data-atf="3" height="' + imgSize.height + 'px" width="' + imgSize.width + 'px"></a>';
+          logo.innerHTML = '<a href="/" data-hveid="7"><img src="https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo_top_86d58ae1.png" alt="Baidu" data-atf="3" height="' + imgSize.height + 'px" width="' + imgSize.width + 'px"></a>';
         
-          document.title = document.title.replace(/\s-\sGoogle\s搜索/g, " - 百度搜索");
+          document.title = document.title.replace(/\s-\sGoogle\s搜(索|尋)/g, " - 百度搜索"); //支持繁体,谢谢david082321提醒
       }
 
       //下面的翻页改成百度的脚丫子
-      var navTabSpans=document.getElementsByClassName("csb");
+      var navTabSpans = document.getElementsByClassName("csb");
       for(var i=0;i<navTabSpans.length;i++){
+        var naviImageUrl="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/global/img/icons_5859e57.png";
         navTabSpans[i].style.width="22px";
         if(i===0) //开始的大G
-          navTabSpans[i].style.background='url("https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/global/img/icons_5859e57.png") no-repeat 0px 0px';
-        else if(navTabSpans[i].classList.contains("ch"))// 变灰色的导航页
-          navTabSpans[i].style.background='url("https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/global/img/icons_5859e57.png") no-repeat -144px -288px';
+          navTabSpans[i].style.background='url("'+naviImageUrl+'") no-repeat 0px 0px';
+        else if(navTabSpans[i].classList.contains("ch")){// 变灰色的导航页
+          navTabSpans[i].style.background= i%2==1?'url("'+naviImageUrl+'") no-repeat -144px -288px':'url("'+naviImageUrl+'") no-repeat -144px -282px'; //让页面底部的百度脚丫子错落有致,感谢Raka-loah 
+        }
         else //当前导航页
-          navTabSpans[i].style.background='url("https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/global/img/icons_5859e57.png") no-repeat -96px -288px';
+          navTabSpans[i].style.background='url("'+naviImageUrl+'") no-repeat -96px -288px';
       }
     }else{//首页
-      var hpLogo=document.querySelector("#lga").querySelector("img");
-      hpLogo.src="//www.baidu.com/img/bd_logo1.png";
-      hplogo.removeAttribute("srcset");
-      hplogo.width=270;
-      hplogo.height=129;
-      hplogo.style.paddingTop="80px";
+      let bannerLogo=document.getElementById("lga").getElementsByTagName("img")[0]; //原来变量名hplogo和Google重复,导致图片操作失效...干...
+      bannerLogo.src="//www.baidu.com/img/bd_logo1.png";
+      bannerLogo.removeAttribute("srcset");
+      bannerLogo.width=270;
+      bannerLogo.height=129;
+      //修改paddingtop的设置方式,改为原值-20px.避免硬性设置.造成不同浏览器下位置错乱.
+      let paddingTop=bannerLogo.style.paddingTop.replace("px","");
+      let paddingTopInt=parseInt(paddingTop);
+      bannerLogo.style.paddingTop=(paddingTopInt-20)+"px";
       
       var searchBtns=document.getElementsByName("btnK");
       for(var x=0;x<searchBtns.length;x++){
-        searchBtns[x].value=searchBtns[x].value.replace("Google","百度");
+        searchBtns[x].value=searchBtns[x].value.replace(/Google\s?/,"百度");
       }
       
       document.title = document.title.replace(/Google/g, "百度一下，你就知道");
+      //按钮下语言切换的提示 arnes提供
+      var footnote=document.getElementById("SIvCob");
+      if(footnote!==null) //某些ip下,可能没有SIvCob,谢谢BeefOnionDumplings提醒.
+        footnote.innerHTML=footnote.innerHTML.replace(/Google\s?/,"百度");      
+      //底部的google
+      var footElements=document.getElementsByClassName("Fx4vi");
+      for(var u=0;u<footElements.length;u++){
+        footElements[u].innerHTML=footElements[u].innerHTML.replace(/Google\s?/,"百度"); 
+      }
+
     }
   
   
