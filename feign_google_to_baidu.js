@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name 把Google搜索伪装成百度搜索
 // @namespace win.somereason.web.utils
-// @version 2020.1.7.1
+// @version 2020.6.10.2
 // @description 用Google搜索,很多人看到屏幕后会问你怎么上Google的.所以当我们把Google的logo换成百度,他们就不会问那么多问题了!
 // @author somereason
 // @license MIT
@@ -44,22 +44,28 @@
       } else {
           var imgSize = getImgSize(logo);
           logo.innerHTML = '<a href="/" data-hveid="7"><img src="https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo_top_86d58ae1.png" alt="Baidu" data-atf="3" height="' + imgSize.height + 'px" width="' + imgSize.width + 'px"></a>';
-        
+
           document.title = document.title.replace(/\s-\sGoogle\s搜(索|尋)/g, " - 百度搜索"); //支持繁体,谢谢david082321提醒
       }
+      //修改为百度的配色
+      document.querySelectorAll("a h3").forEach(a=>a.style.color="#0000cc");
+      document.querySelectorAll("span.st").forEach(a=>a.style.color="#333333")
+      document.querySelectorAll("em, .rbt b, .c b, .fl b").forEach(a=>a.style.color="#CC0000")
 
       //下面的翻页改成百度的脚丫子
-      var navTabSpans = document.getElementsByClassName("csb");
+      var navTabSpans = document.getElementsByClassName("SJajHc");
       for(var i=0;i<navTabSpans.length;i++){
         var naviImageUrl="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/global/img/icons_5859e57.png";
         navTabSpans[i].style.width="22px";
-        if(i===0) //开始的大G
+        if(i===0){ //开始的大G
           navTabSpans[i].style.background='url("'+naviImageUrl+'") no-repeat 0px 0px';
-        else if(navTabSpans[i].classList.contains("ch")){// 变灰色的导航页
+        }else if (i==navTabSpans.length-1){
+          navTabSpans[i].style.background='url("'+naviImageUrl+'") no-repeat 0px 0px';
+        } else if(navTabSpans[i].classList.contains("NVbCr")){// 变灰色的导航页
           navTabSpans[i].style.background= i%2==1?'url("'+naviImageUrl+'") no-repeat -144px -288px':'url("'+naviImageUrl+'") no-repeat -144px -282px'; //让页面底部的百度脚丫子错落有致,感谢Raka-loah 
-        }
-        else //当前导航页
+        }else{ //当前导航页
           navTabSpans[i].style.background='url("'+naviImageUrl+'") no-repeat -96px -288px';
+        }
       }
     }else{//首页
       let bannerLogo=document.getElementById("lga").getElementsByTagName("img")[0]; //原来变量名hplogo和Google重复,导致图片操作失效...干...
